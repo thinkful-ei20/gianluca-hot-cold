@@ -22,12 +22,15 @@ export default class Game extends Component {
 	getFeedBack() {
 
 		let feedback;
-		const guesses = this.state.guesses;
+
 		const answer = this.state.answer;
 
-		const lastGuess = guesses[guesses.length -1];
-		const difference = Math.abs(answer - lastGuess);
+		const lastGuess = +this.state.guess;
 		
+		const difference = Math.abs(answer - lastGuess);
+
+		console.log(lastGuess, typeof(lastGuess));
+	
 		if(difference === 0) {
 			feedback = 'YOU WIN! if youd like to play again, press NEW GAME';
 		} else if(difference <= 5) {
@@ -41,6 +44,7 @@ export default class Game extends Component {
 		} else {
 			feedback = 'Ice Cold';
 		}
+		this.setState({feedback, guess:''});
 	}
 
 	verfiyDuplicate(value) {
@@ -51,24 +55,23 @@ export default class Game extends Component {
 		e.preventDefault();
 		let guess = +this.state.guess; //coersion
 		if(guess && (guess > 0 && guess <= 100) && !this.verfiyDuplicate(guess)) {
-			this.setState({guesses:[...this.state.guesses, guess]})
+			this.setState({guesses:[...this.state.guesses, guess]}, this.getFeedBack());
 		} else {
 			alert('Input must be a unique number between 0 and 100(inclusive)');
 		}
-		this.setState({guess:''});
 	}
 
 	updateUserInput(e) {
 		this.setState({guess: e.target.value});
 	}
 
-	updateModal(){
+	updateModal = () => {
 		this.setState({
 			about: !this.state.about
 		});
 	}
 
-	restartGame(){
+	restartGame = () =>{
 		this.setState({
 			answer: Math.floor(Math.random() * 100),
 			guesses: [],
@@ -81,11 +84,11 @@ export default class Game extends Component {
 
 	render(){
 		if(this.state.about) {
-			return <InfoModal showAbout={() => this.updateModal} />;
+			return <InfoModal showAbout={this.updateModal} />;
 		}
 		return (
 			<div>
-				<Header restartGame={() => this.restartGame} about={this.state.about} showAbout={() => this.updateModal}/>
+				<Header restartGame={this.restartGame} about={this.state.about} showAbout={this.updateModal}/>
 				<GuessSection feedback={this.state.feedback} onChange={(e) => this.updateUserInput(e)} value={this.state.guess} onSubmit={(e) => this.proccessSubmit(e)}/>
 				<GuessCount count={this.state.guesses.length} />
 				<GuessList guesses={this.state.guesses} />
