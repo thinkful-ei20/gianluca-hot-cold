@@ -12,7 +12,6 @@ export default class Game extends Component {
 		this.state = {
 			answer: Math.floor(Math.random() * 100),
 			guesses: [],
-			win: false,
 			about: false,
 			feedback:'Guess a unique number between 0 and 100!',
 			guess:'',
@@ -26,11 +25,9 @@ export default class Game extends Component {
 		const answer = this.state.answer;
 
 		const lastGuess = +this.state.guess;
-		
+
 		const difference = Math.abs(answer - lastGuess);
 
-		console.log(lastGuess, typeof(lastGuess));
-	
 		if(difference === 0) {
 			feedback = 'YOU WIN! if youd like to play again, press NEW GAME';
 		} else if(difference <= 5) {
@@ -51,7 +48,7 @@ export default class Game extends Component {
 		return this.state.guesses.includes(value);
 	}
 
-	proccessSubmit(e) {
+	onSubmit = (e) => {
 		e.preventDefault();
 		let guess = +this.state.guess; //coersion
 		if(guess && (guess > 0 && guess <= 100) && !this.verfiyDuplicate(guess)) {
@@ -61,11 +58,11 @@ export default class Game extends Component {
 		}
 	}
 
-	updateUserInput(e) {
+	updateGuess = (e) => {
 		this.setState({guess: e.target.value});
 	}
 
-	updateModal = () => {
+	toggleAboutModal = () => {
 		this.setState({
 			about: !this.state.about
 		});
@@ -84,16 +81,15 @@ export default class Game extends Component {
 
 	render(){
 		if(this.state.about) {
-			return <InfoModal showAbout={this.updateModal} />;
+			return <InfoModal toggleAbout={this.updateModal} />;
 		}
 		return (
 			<div>
-				<Header restartGame={this.restartGame} about={this.state.about} showAbout={this.updateModal}/>
-				<GuessSection feedback={this.state.feedback} onChange={(e) => this.updateUserInput(e)} value={this.state.guess} onSubmit={(e) => this.proccessSubmit(e)}/>
+				<Header restartGame={this.restartGame} about={this.state.about} toggleAbout={this.toggleAboutModal}/>
+				<GuessSection feedback={this.state.feedback} onChange={this.updateGuess} value={this.state.guess} onSubmit={this.onSubmit}/>
 				<GuessCount count={this.state.guesses.length} />
 				<GuessList guesses={this.state.guesses} />
 			</div>
 		);
 	}
 }
-
